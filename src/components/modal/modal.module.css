@@ -1,0 +1,19 @@
+._container {
+  width: 600px;
+  height: 600px;
+  background-color: white;
+  border: 1px solid grey;
+  position: absolute;
+  right: 50%;
+  margin-right: -300px;
+  top: 50%;
+  margin-top: -300px;
+}
+
+._overlay {
+  background-color: black;
+  opacity: 0.5;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
