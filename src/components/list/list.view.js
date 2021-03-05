@@ -1,38 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import data from '../../data/discover-movie.json';
 import Movie from '../movie';
-import Modal from '../modal';
+import MovieModal from '../movieModal';
 import styles from './list.module.css';
+import { request } from '../../utils/request.utils';
 
-const List = ({ searchValue }) => {
+const List = ({ moviesAfterFilter, selectedGenre }) => {
+  const [movies, setMovies] = useState();
   const [selectedMovie, setSelectedMovie] = useState();
   const [openModal, setOpenModal] = useState(false);
-  // const { results: movies } = data;
-  const movies = data.results;
-  const [filteredMovies, setFileteredMovies] = useState(movies);
-
-  console.debug('LIST >>>>', selectedMovie, searchValue);
+  const [filteredMovies, setFileteredMovies] = useState();
 
   useEffect(() => {
-    if (searchValue) {
-      setFileteredMovies(movies.filter(movie => movie.title.toLowerCase().includes(searchValue)));
-    }
-  }, [searchValue, movies]);
+    request({ url: 'discover/movie', onSuccess: setMovies });
+  }, []);
 
-  return (
+  useEffect(() => {
+    if (movies) {
+      setFileteredMovies(movies.results);
+    }
+  }, [movies]);
+
+  useEffect(() => {
+    if (moviesAfterFilter) {
+      setFileteredMovies(moviesAfterFilter.results);
+    }
+  }, [moviesAfterFilter]);
+
+  useEffect(() => {
+    if (selectedGenre) {
+      setFileteredMovies(movies.results.filter(movie => {
+        console.debug(movie.genre_ids, selectedGenre);
+        return movie.genre_ids.includes(parseInt(selectedGenre, 10));
+      }));
+    }
+  }, [selectedGenre, movies]);
+
+  return filteredMovies ? (
     <div className={styles._container}>
       {filteredMovies.map(movie => (
         <Movie key={`movie-${movie.id}`} movie={movie} selectMovie={movie => {
           setOpenModal(true);
-          setSelectedMovie(movie);
+          setSelectedMovie(movie.id);
         }} />
       ))}
-      {openModal && <Modal open={openModal} handleCloseModal={() => setOpenModal(false)}>
-        <img src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2/${selectedMovie.poster_path}`} />
-        <p>{selectedMovie.title }</p>
-      </Modal>}
+      {openModal && <MovieModal openModal idMovie={selectedMovie} handleClose={() => setOpenModal(false)} />}
     </div>
-  );
+  ) : <p>Loading</p>;
 };
 
 export default List;

@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { request } from '../../utils/request.utils';
 import styles from './header.module.css';
 
-const Header = ({ handleSearchValue }) => {
+const Header = ({ setFilteredData }) => {
   const [searchValue, setSearchValue] = useState('');
+
+  const search = () => {
+    if (searchValue) {
+      request({
+        url: `search/movie`,
+        params: `query=${searchValue}`,
+        onSuccess: data => setFilteredData(data),
+      });
+    }
+  };
 
   return (
     <div className={styles._container}>
       <input name="search" onChange={e => setSearchValue(e.target.value)} />
-      <button onClick={() => handleSearchValue(searchValue)}>Search</button>
+      <button onClick={() => search(searchValue)}>Search</button>
     </div>
   );
 };

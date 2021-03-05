@@ -1,14 +1,18 @@
+import { useState } from 'react';
 import Header from './components/header';
 import List from './components/list';
+import GenreFilter from './components/genreFilter';
 import styles from './app.module.css';
-import { useState } from 'react';
 
 function App() {
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValues, setSearchValues] = useState([]);
+  const [idGenre, setIdGenre] = useState();
+
   return (
     <div className={styles._container}>
-      <Header handleSearchValue={value => setSearchValue(value)} />
-      <List searchValue={searchValue} />
+      <Header setFilteredData={values => setSearchValues(values)} />
+      <GenreFilter onSelect={setIdGenre} />
+      <List selectedGenre={idGenre} moviesAfterFilter={searchValues}  />
     </div>
   );
 }
